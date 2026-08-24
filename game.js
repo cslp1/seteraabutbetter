@@ -1,5 +1,4 @@
 const levels = {
-
   states: {
     name: "Bundesländer",
     file: "./maps/germany-states.geojson"
@@ -9,109 +8,132 @@ const levels = {
     name: "Regierungsbezirke",
     file: "./maps/germany-regierungsbezirke.geojson"
   }
-
 };
 
-
 let currentLevel = "states";
-
-let mapData;
-
+let mapData = null;
 let questions = [];
-
-let currentQuestion;
-
+let currentQuestion = null;
 let score = 0;
-
 let time = 120;
-
 let locked = false;
+let timer = null;
 
-let timer;
+const svg = d3.select("#map");
 
-
-const svg =
-  d3.select("#map");
-
-const target =
-  document.getElementById("target");
-
-const scoreElement =
-  document.getElementById("score");
-
-const timeElement =
-  document.getElementById("time");
-
-const message =
-  document.getElementById("message");
-
-const nextButton =
-  document.getElementById("next");
-
-const newGameButton =
-  document.getElementById("newGame");
-
-const levelTitle =
-  document.getElementById("levelTitle");
+const target = document.getElementById("target");
+const scoreElement = document.getElementById("score");
+const timeElement = document.getElementById("time");
+const message = document.getElementById("message");
+const nextButton = document.getElementById("next");
+const newGameButton = document.getElementById("newGame");
+const levelTitle = document.getElementById("levelTitle");
 
 const levelButtons =
   document.querySelectorAll(".level");
 
 
-/*
-================================
-GET NAME FROM GEOJSON
-================================
-*/
+/* ================================
+   GET REGION NAME
+================================ */
 
 function getName(feature) {
 
-  const p =
-    feature.properties || {};
+  const p = feature.properties || {};
 
-  return (
-    p.name ||
-    p.NAME ||
-    p.NAM ||
-    p.GEN ||
-    p.NL_NAME ||
-    p.BEZ ||
-    p.GEN_L ||
-    p.ars_name ||
-    "Unknown region"
+  /*
+    The Germany GeoJSON files can use
+    different property names depending
+    on the administrative level.
+  */
+
+  const possibleNames = [
+    p.name,
+    p.NAME,
+    p.Name,
+    p.NAM,
+    p.GEN,
+    p.GEN_L,
+    p.NL_NAME,
+    p.BEZ,
+    p.BEZIRK,
+    p.regierungsbezirk,
+    p.REGIERUNGSBEZIRK,
+    p.ARS_NAME,
+    p.ars_name,
+    p.AGS_NAME,
+    p.LAN,
+    p.LAND
+  ];
+
+  for (const name of possibleNames) {
+
+    if (
+      name !== undefined &&
+      name !== null &&
+      String(name).trim() !== ""
+    ) {
+
+      return String(name).trim();
+
+    }
+  }
+
+
+  /*
+    Last resort:
+    create a readable name from the
+    feature's properties.
+  */
+
+  console.warn(
+    "Could not find region name.",
+    p
   );
+
+  return "Unknown region";
 }
 
 
-/*
-================================
-GET UNIQUE ID
-================================
-*/
+/* ================================
+   GET UNIQUE ID
+================================ */
 
 function getId(feature, index) {
 
-  const p =
-    feature.properties || {};
+  const p = feature.properties || {};
 
-  return String(
-    feature.id ||
-    p.id ||
-    p.ID ||
-    p.OBJECTID ||
-    p.ARS ||
-    p.AGS ||
-    index
-  );
+  const possibleIds = [
+    feature.id,
+    p.id,
+    p.ID,
+    p.OBJECTID,
+    p.ARS,
+    p.AGS,
+    p.SN_L,
+    p.SN_K
+  ];
 
+  for (const id of possibleIds) {
+
+    if (
+      id !== undefined &&
+      id !== null &&
+      String(id).trim() !== ""
+    ) {
+
+      return String(id);
+
+    }
+  }
+
+  return String(index);
 }
 
 
-/*
-================================
-LOAD MAP
-================================
-*/
+/* ================================
+   LOAD MAP
+================================ */
 
 async function loadMap() {
 
@@ -135,7 +157,7 @@ async function loadMap() {
     if (!response.ok) {
 
       throw new Error(
-        "Could not load GeoJSON"
+        `Could not load ${levels[currentLevel].file}`
       );
 
     }
@@ -145,28 +167,56 @@ async function loadMap() {
       await response.json();
 
 
+    if (
+      !mapData.features ||
+      !mapData.features.length
+    ) {
+
+      throw new Error(
+        "GeoJSON contains no features."
+      );
+
+    }
+
+
+    console.log(
+      "Loaded map:",
+      mapData
+    );
+
+
+    /*
+      Useful debugging information.
+      Open the browser console with F12
+      if something still doesn't work.
+    */
+
+    console.log(
+      "First feature properties:",
+      mapData.features[0].properties
+    );
+
+
     drawMap();
 
     startGame();
-
 
   } catch (error) {
 
     console.error(error);
 
     message.textContent =
-      "Map could not be loaded.";
+      "Map could not be loaded. Check the browser console.";
 
+    target.textContent =
+      "Map error";
   }
-
 }
 
 
-/*
-================================
-DRAW MAP
-================================
-*/
+/* ================================
+   DRAW MAP
+================================ */
 
 function drawMap() {
 
@@ -207,44 +257,49 @@ function drawMap() {
         getId(feature, index)
     )
 
+    .attr(
+      "title",
+      feature =>
+        getName(feature)
+    )
+
     .on(
       "click",
       function(event, feature) {
 
+        const index =
+          mapData.features.indexOf(
+            feature
+          );
+
         chooseRegion(
           getId(
             feature,
-            mapData.features.indexOf(feature)
+            index
           )
         );
 
       }
     );
-
 }
 
 
-/*
-================================
-SHUFFLE
-================================
-*/
+/* ================================
+   SHUFFLE
+================================ */
 
 function shuffle(array) {
 
-  return [...array]
-    .sort(
-      () => Math.random() - 0.5
-    );
+  return [...array].sort(
+    () => Math.random() - 0.5
+  );
 
 }
 
 
-/*
-================================
-START GAME
-================================
-*/
+/* ================================
+   START GAME
+================================ */
 
 function startGame() {
 
@@ -278,18 +333,9 @@ function startGame() {
 
   svg
     .selectAll(".state")
-    .classed(
-      "correct",
-      false
-    )
-    .classed(
-      "wrong",
-      false
-    )
-    .classed(
-      "answer",
-      false
-    );
+    .classed("correct", false)
+    .classed("wrong", false)
+    .classed("answer", false);
 
 
   scoreElement.textContent =
@@ -300,8 +346,7 @@ function startGame() {
     levels[currentLevel].name;
 
 
-  nextButton.disabled =
-    true;
+  nextButton.disabled = true;
 
 
   updateTimer();
@@ -309,33 +354,26 @@ function startGame() {
   nextQuestion();
 
 
-  timer =
-    setInterval(
-      () => {
+  timer = setInterval(() => {
 
-        time--;
+    time--;
 
-        updateTimer();
+    updateTimer();
 
 
-        if (time <= 0) {
+    if (time <= 0) {
 
-          endGame();
+      endGame();
 
-        }
+    }
 
-      },
-      1000
-    );
-
+  }, 1000);
 }
 
 
-/*
-================================
-NEXT QUESTION
-================================
-*/
+/* ================================
+   NEXT QUESTION
+================================ */
 
 function nextQuestion() {
 
@@ -344,7 +382,6 @@ function nextQuestion() {
     finishGame();
 
     return;
-
   }
 
 
@@ -354,9 +391,7 @@ function nextQuestion() {
 
   locked = false;
 
-
-  nextButton.disabled =
-    true;
+  nextButton.disabled = true;
 
 
   target.textContent =
@@ -365,15 +400,12 @@ function nextQuestion() {
 
   message.textContent =
     "Find it on the map.";
-
 }
 
 
-/*
-================================
-ANSWER
-================================
-*/
+/* ================================
+   CHOOSE REGION
+================================ */
 
 function chooseRegion(id) {
 
@@ -383,7 +415,6 @@ function chooseRegion(id) {
   ) {
 
     return;
-
   }
 
 
@@ -392,7 +423,7 @@ function chooseRegion(id) {
 
   const clicked =
     svg.select(
-      `[data-id="${id}"]`
+      `[data-id="${CSS.escape(id)}"]`
     );
 
 
@@ -412,7 +443,6 @@ function chooseRegion(id) {
     message.textContent =
       "Correct! 🎉";
 
-
   } else {
 
     clicked.classed(
@@ -423,7 +453,9 @@ function chooseRegion(id) {
 
     const correct =
       svg.select(
-        `[data-id="${currentQuestion.id}"]`
+        `[data-id="${CSS.escape(
+          currentQuestion.id
+        )}"]`
       );
 
 
@@ -435,7 +467,6 @@ function chooseRegion(id) {
 
     message.textContent =
       `Wrong! The answer was ${currentQuestion.name}.`;
-
   }
 
 
@@ -443,17 +474,13 @@ function chooseRegion(id) {
     `${score} / ${mapData.features.length}`;
 
 
-  nextButton.disabled =
-    false;
-
+  nextButton.disabled = false;
 }
 
 
-/*
-================================
-TIMER
-================================
-*/
+/* ================================
+   TIMER
+================================ */
 
 function updateTimer() {
 
@@ -471,15 +498,12 @@ function updateTimer() {
 
   timeElement.textContent =
     `${minutes}:${seconds}`;
-
 }
 
 
-/*
-================================
-GAME OVER
-================================
-*/
+/* ================================
+   END GAME
+================================ */
 
 function endGame() {
 
@@ -487,15 +511,17 @@ function endGame() {
 
   locked = true;
 
-  nextButton.disabled =
-    true;
+  nextButton.disabled = true;
 
 
   message.textContent =
     `Time's up! You found ${score} of ${mapData.features.length}.`;
-
 }
 
+
+/* ================================
+   FINISH GAME
+================================ */
 
 function finishGame() {
 
@@ -503,21 +529,17 @@ function finishGame() {
 
   locked = true;
 
-  nextButton.disabled =
-    true;
+  nextButton.disabled = true;
 
 
   message.textContent =
     `Finished! You found ${score} of ${mapData.features.length}! 🎉`;
-
 }
 
 
-/*
-================================
-NEXT BUTTON
-================================
-*/
+/* ================================
+   NEXT BUTTON
+================================ */
 
 nextButton.addEventListener(
   "click",
@@ -525,11 +547,9 @@ nextButton.addEventListener(
 );
 
 
-/*
-================================
-NEW GAME
-================================
-*/
+/* ================================
+   NEW GAME
+================================ */
 
 newGameButton.addEventListener(
   "click",
@@ -537,49 +557,43 @@ newGameButton.addEventListener(
 );
 
 
-/*
-================================
-LEVEL BUTTONS
-================================
-*/
+/* ================================
+   LEVEL BUTTONS
+================================ */
 
-levelButtons.forEach(
-  button => {
+levelButtons.forEach(button => {
 
-    button.addEventListener(
-      "click",
-      () => {
+  button.addEventListener(
+    "click",
+    () => {
 
-        currentLevel =
-          button.dataset.level;
+      currentLevel =
+        button.dataset.level;
 
 
-        levelButtons.forEach(
-          b =>
-            b.classList.remove(
-              "active"
-            )
-        );
+      levelButtons.forEach(
+        b =>
+          b.classList.remove(
+            "active"
+          )
+      );
 
 
-        button.classList.add(
-          "active"
-        );
+      button.classList.add(
+        "active"
+      );
 
 
-        loadMap();
+      loadMap();
 
-      }
-    );
+    }
+  );
 
-  }
-);
+});
 
 
-/*
-================================
-START
-================================
-*/
+/* ================================
+   START
+================================ */
 
 loadMap();
