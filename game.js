@@ -56,6 +56,9 @@ const levelMenu =
 const gameScreen =
   document.getElementById("gameScreen");
 
+const resultsScreen =
+  document.getElementById("resultsScreen");
+
 
 const playButton =
   document.getElementById("playButton");
@@ -74,6 +77,16 @@ const gameMenuButton =
 
 const changeLevelButton =
   document.getElementById("changeLevelButton");
+
+
+const playAgainButton =
+  document.getElementById("playAgainButton");
+
+const resultsLevelsButton =
+  document.getElementById("resultsLevelsButton");
+
+const resultsMenuButton =
+  document.getElementById("resultsMenuButton");
 
 
 const levelCards =
@@ -109,6 +122,24 @@ const gameLevelTitle =
   document.getElementById("gameLevelTitle");
 
 
+/* RESULTS */
+
+const resultsLevel =
+  document.getElementById("resultsLevel");
+
+const finalScore =
+  document.getElementById("finalScore");
+
+const finalPercentage =
+  document.getElementById("finalPercentage");
+
+const finalCorrect =
+  document.getElementById("finalCorrect");
+
+const finalTime =
+  document.getElementById("finalTime");
+
+
 /* =====================================
    SCREEN SWITCHING
 ===================================== */
@@ -120,6 +151,8 @@ function showScreen(screen) {
   levelMenu.classList.remove("active");
 
   gameScreen.classList.remove("active");
+
+  resultsScreen.classList.remove("active");
 
 
   screen.classList.add("active");
@@ -215,6 +248,7 @@ function getName(feature) {
 
 
   return "Unknown region";
+
 }
 
 
@@ -273,6 +307,7 @@ function getId(
 
 
   return String(index);
+
 }
 
 
@@ -534,7 +569,7 @@ function startGame() {
 
         if (time <= 0) {
 
-          endGame();
+          showResults();
 
         }
 
@@ -553,7 +588,7 @@ function nextQuestion() {
 
   if (!questions.length) {
 
-    finishGame();
+    showResults();
 
     return;
 
@@ -660,6 +695,12 @@ function chooseRegion(id) {
   nextButton.disabled =
     false;
 
+
+  /*
+    If that was the final question,
+    the Next button will finish the game.
+  */
+
 }
 
 
@@ -688,41 +729,74 @@ function updateTimer() {
 
 
 /* =====================================
-   END GAME
+   RESULTS
 ===================================== */
 
-function endGame() {
+function showResults() {
 
   clearInterval(timer);
 
   locked = true;
 
-  nextButton.disabled =
-    true;
+
+  const total =
+    mapData
+      ? mapData.features.length
+      : 0;
 
 
-  message.textContent =
-    `Time's up! You found ${score} of ${mapData.features.length}.`;
+  const percentage =
+    total > 0
+      ? Math.round(
+          (score / total) * 100
+        )
+      : 0;
+
+
+  resultsLevel.textContent =
+    levels[currentLevel].name;
+
+
+  finalScore.textContent =
+    `${score} / ${total}`;
+
+
+  finalPercentage.textContent =
+    `${percentage}%`;
+
+
+  finalCorrect.textContent =
+    score;
+
+
+  finalTime.textContent =
+    formatTime(time);
+
+
+  showScreen(resultsScreen);
 
 }
 
 
 /* =====================================
-   FINISH GAME
+   FORMAT TIME
 ===================================== */
 
-function finishGame() {
+function formatTime(seconds) {
 
-  clearInterval(timer);
-
-  locked = true;
-
-  nextButton.disabled =
-    true;
+  const minutes =
+    Math.floor(seconds / 60)
+      .toString()
+      .padStart(2, "0");
 
 
-  message.textContent =
-    `Finished! You found ${score} of ${mapData.features.length}! 🎉`;
+  const remaining =
+    (seconds % 60)
+      .toString()
+      .padStart(2, "0");
+
+
+  return `${minutes}:${remaining}`;
 
 }
 
@@ -758,7 +832,7 @@ levelsButton.addEventListener(
 
 
 /* =====================================
-   BACK
+   BACK FROM LEVELS
 ===================================== */
 
 backFromLevels.addEventListener(
@@ -876,6 +950,50 @@ nextButton.addEventListener(
   () => {
 
     nextQuestion();
+
+  }
+);
+
+
+/* =====================================
+   PLAY AGAIN
+===================================== */
+
+playAgainButton.addEventListener(
+  "click",
+  () => {
+
+    showScreen(gameScreen);
+
+    startGame();
+
+  }
+);
+
+
+/* =====================================
+   RESULTS → LEVELS
+===================================== */
+
+resultsLevelsButton.addEventListener(
+  "click",
+  () => {
+
+    showScreen(levelMenu);
+
+  }
+);
+
+
+/* =====================================
+   RESULTS → MENU
+===================================== */
+
+resultsMenuButton.addEventListener(
+  "click",
+  () => {
+
+    showScreen(mainMenu);
 
   }
 );
