@@ -1,3 +1,7 @@
+/* =====================================
+   LEVELS
+===================================== */
+
 const levels = {
 
   states: {
@@ -18,6 +22,10 @@ const levels = {
 };
 
 
+/* =====================================
+   GAME STATE
+===================================== */
+
 let currentLevel = "states";
 
 let mapData = null;
@@ -35,8 +43,46 @@ let locked = false;
 let timer = null;
 
 
+/* =====================================
+   ELEMENTS
+===================================== */
+
+const mainMenu =
+  document.getElementById("mainMenu");
+
+const levelMenu =
+  document.getElementById("levelMenu");
+
+const gameScreen =
+  document.getElementById("gameScreen");
+
+
+const playButton =
+  document.getElementById("playButton");
+
+const levelsButton =
+  document.getElementById("levelsButton");
+
+const backFromLevels =
+  document.getElementById("backFromLevels");
+
+const startLevelButton =
+  document.getElementById("startLevelButton");
+
+const gameMenuButton =
+  document.getElementById("gameMenuButton");
+
+const changeLevelButton =
+  document.getElementById("changeLevelButton");
+
+
+const levelCards =
+  document.querySelectorAll(".levelCard");
+
+
 const svg =
   d3.select("#map");
+
 
 const target =
   document.getElementById("target");
@@ -59,8 +105,26 @@ const newGameButton =
 const levelTitle =
   document.getElementById("levelTitle");
 
-const levelButtons =
-  document.querySelectorAll(".level");
+const gameLevelTitle =
+  document.getElementById("gameLevelTitle");
+
+
+/* =====================================
+   SCREEN SWITCHING
+===================================== */
+
+function showScreen(screen) {
+
+  mainMenu.classList.remove("active");
+
+  levelMenu.classList.remove("active");
+
+  gameScreen.classList.remove("active");
+
+
+  screen.classList.add("active");
+
+}
 
 
 /* =====================================
@@ -101,6 +165,8 @@ function getName(feature) {
 
     "NAME_2",
 
+    "NAME_3",
+
     "VARNAME"
 
   ];
@@ -127,10 +193,7 @@ function getName(feature) {
   }
 
 
-  /*
-    Fallback:
-    Find any useful text property.
-  */
+  /* FALLBACK */
 
   for (
     const [key, value]
@@ -241,7 +304,7 @@ async function loadMap() {
     if (!response.ok) {
 
       throw new Error(
-        `Could not load ${levels[currentLevel].file}`
+        "Could not load GeoJSON"
       );
 
     }
@@ -253,38 +316,14 @@ async function loadMap() {
 
     if (
       !mapData.features ||
-      mapData.features.length === 0
+      !mapData.features.length
     ) {
 
       throw new Error(
-        "The GeoJSON contains no features."
+        "GeoJSON has no features"
       );
 
     }
-
-
-    console.log(
-      "CURRENT LEVEL:",
-      currentLevel
-    );
-
-
-    console.log(
-      "FEATURES:",
-      mapData.features.length
-    );
-
-
-    console.log(
-      "FIRST FEATURE:",
-      mapData.features[0]
-    );
-
-
-    console.log(
-      "PROPERTIES:",
-      mapData.features[0].properties
-    );
 
 
     drawMap();
@@ -304,7 +343,7 @@ async function loadMap() {
 
 
     message.textContent =
-      "The map could not be loaded.";
+      "Could not load the map.";
 
   }
 
@@ -407,6 +446,15 @@ function shuffle(array) {
 
 function startGame() {
 
+  if (!mapData) {
+
+    loadMap();
+
+    return;
+
+  }
+
+
   clearInterval(timer);
 
 
@@ -459,6 +507,10 @@ function startGame() {
 
 
   levelTitle.textContent =
+    levels[currentLevel].name;
+
+
+  gameLevelTitle.textContent =
     levels[currentLevel].name;
 
 
@@ -676,54 +728,75 @@ function finishGame() {
 
 
 /* =====================================
-   NEXT BUTTON
+   MAIN MENU
 ===================================== */
 
-nextButton.addEventListener(
+playButton.addEventListener(
   "click",
-  nextQuestion
+  () => {
+
+    showScreen(gameScreen);
+
+    loadMap();
+
+  }
 );
 
 
 /* =====================================
-   NEW GAME
+   LEVEL MENU
 ===================================== */
 
-newGameButton.addEventListener(
+levelsButton.addEventListener(
   "click",
-  startGame
+  () => {
+
+    showScreen(levelMenu);
+
+  }
 );
 
 
 /* =====================================
-   LEVEL SWITCHING
+   BACK
 ===================================== */
 
-levelButtons.forEach(
-  button => {
+backFromLevels.addEventListener(
+  "click",
+  () => {
 
-    button.addEventListener(
+    showScreen(mainMenu);
+
+  }
+);
+
+
+/* =====================================
+   LEVEL SELECTION
+===================================== */
+
+levelCards.forEach(
+  card => {
+
+    card.addEventListener(
       "click",
       () => {
 
         currentLevel =
-          button.dataset.level;
+          card.dataset.level;
 
 
-        levelButtons.forEach(
-          b =>
-            b.classList.remove(
-              "active"
+        levelCards.forEach(
+          c =>
+            c.classList.remove(
+              "selected"
             )
         );
 
 
-        button.classList.add(
-          "active"
+        card.classList.add(
+          "selected"
         );
-
-
-        loadMap();
 
       }
     );
@@ -733,7 +806,83 @@ levelButtons.forEach(
 
 
 /* =====================================
-   START
+   START SELECTED LEVEL
 ===================================== */
 
-loadMap();
+startLevelButton.addEventListener(
+  "click",
+  () => {
+
+    showScreen(gameScreen);
+
+    loadMap();
+
+  }
+);
+
+
+/* =====================================
+   CHANGE LEVEL
+===================================== */
+
+changeLevelButton.addEventListener(
+  "click",
+  () => {
+
+    clearInterval(timer);
+
+    showScreen(levelMenu);
+
+  }
+);
+
+
+/* =====================================
+   GAME MENU
+===================================== */
+
+gameMenuButton.addEventListener(
+  "click",
+  () => {
+
+    clearInterval(timer);
+
+    showScreen(mainMenu);
+
+  }
+);
+
+
+/* =====================================
+   NEW GAME
+===================================== */
+
+newGameButton.addEventListener(
+  "click",
+  () => {
+
+    startGame();
+
+  }
+);
+
+
+/* =====================================
+   NEXT
+===================================== */
+
+nextButton.addEventListener(
+  "click",
+  () => {
+
+    nextQuestion();
+
+  }
+);
+
+
+/* =====================================
+   INITIAL SCREEN
+===================================== */
+
+showScreen(mainMenu);
