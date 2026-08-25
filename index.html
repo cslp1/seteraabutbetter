@@ -1,139 +1,389 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>Seterra But Better</title>
 
-  <link rel="stylesheet" href="style.css">
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
 </head>
+
 
 <body>
 
-<main>
 
-  <header>
-    <div>
-      <p class="eyebrow">GERMANY • GEOGRAPHY GAME</p>
-      <h1>Seterra But Better</h1>
-    </div>
+<!-- =====================================
+     MAIN MENU
+===================================== -->
 
-    <button id="newGame">New Game</button>
-  </header>
+<section
+  id="mainMenu"
+  class="screen active"
+>
 
+  <div class="menu">
 
-  <!-- LEVEL SELECTOR -->
+    <p class="eyebrow">
+      GEOGRAPHY GAME
+    </p>
 
-  <nav class="levels">
+    <h1>
+      Seterra
+      <span>But Better</span>
+    </h1>
+
+    <p class="subtitle">
+      Test your geography skills.
+    </p>
+
 
     <button
-      class="level active"
-      data-level="states"
+      id="playButton"
+      class="bigButton"
     >
-      Level 1
-      <small>Bundesländer</small>
+      Play
     </button>
+
 
     <button
-      class="level"
-      data-level="districts"
+      id="levelsButton"
+      class="menuButton"
     >
-      Level 2
-      <small>Regierungsbezirke</small>
+      Choose Level
     </button>
+
+
+    <div class="country">
+
+      <span>
+        Country
+      </span>
+
+      <strong>
+        🇩🇪 Germany
+      </strong>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+
+<!-- =====================================
+     LEVEL MENU
+===================================== -->
+
+<section
+  id="levelMenu"
+  class="screen"
+>
+
+  <div class="menu">
 
     <button
-      class="level"
-      data-level="counties"
+      id="backFromLevels"
+      class="backButton"
     >
-      Level 3
-      <small>Landkreise & kreisfreie Städte</small>
+      ← Back
     </button>
 
-  </nav>
+
+    <p class="eyebrow">
+      GERMANY
+    </p>
+
+    <h2>
+      Choose a Level
+    </h2>
 
 
-  <!-- HUD -->
+    <div class="levelCards">
 
-  <section class="hud">
-
-    <div class="stat">
-      <span>Find</span>
-      <strong id="target">Loading...</strong>
-    </div>
-
-    <div class="stat">
-      <span>Score</span>
-      <strong id="score">0 / 0</strong>
-    </div>
-
-    <div class="stat">
-      <span>Time</span>
-      <strong id="time">02:00</strong>
-    </div>
-
-  </section>
-
-
-  <!-- GAME -->
-
-  <section class="game">
-
-    <div class="map-card">
-
-      <svg
-        id="map"
-        viewBox="0 0 800 800"
-        preserveAspectRatio="xMidYMid meet"
-      ></svg>
-
-      <p class="hint">
-        Click the region you are looking for.
-      </p>
-
-    </div>
-
-
-    <aside>
-
-      <h2 id="levelTitle">
-        Bundesländer
-      </h2>
-
-      <p>
-        Find every region on the map.
-      </p>
-
-      <div
-        id="message"
-        class="message"
-      >
-        Loading map...
-      </div>
 
       <button
-        id="next"
-        class="next"
-        disabled
+        class="levelCard selected"
+        data-level="states"
       >
-        Next
+
+        <strong>
+          Level 1
+        </strong>
+
+        <span>
+          Bundesländer
+        </span>
+
+        <small>
+          16 states
+        </small>
+
       </button>
 
-    </aside>
 
-  </section>
 
-</main>
+      <button
+        class="levelCard"
+        data-level="districts"
+      >
+
+        <strong>
+          Level 2
+        </strong>
+
+        <span>
+          Regierungsbezirke
+        </span>
+
+        <small>
+          Administrative districts
+        </small>
+
+      </button>
+
+
+
+      <button
+        class="levelCard"
+        data-level="counties"
+      >
+
+        <strong>
+          Level 3
+        </strong>
+
+        <span>
+          Landkreise & kreisfreie Städte
+        </span>
+
+        <small>
+          County level
+        </small>
+
+      </button>
+
+
+    </div>
+
+
+    <button
+      id="startLevelButton"
+      class="bigButton"
+    >
+      Start Game
+    </button>
+
+  </div>
+
+</section>
+
+
+
+<!-- =====================================
+     GAME
+===================================== -->
+
+<section
+  id="gameScreen"
+  class="screen"
+>
+
+  <main>
+
+
+    <header>
+
+      <div>
+
+        <p class="eyebrow">
+          GERMANY • GEOGRAPHY
+        </p>
+
+        <h1>
+          Seterra But Better
+        </h1>
+
+      </div>
+
+
+      <button
+        id="gameMenuButton"
+      >
+        Menu
+      </button>
+
+    </header>
+
+
+
+    <!-- LEVEL -->
+
+    <div class="gameLevel">
+
+      <strong
+        id="gameLevelTitle"
+      >
+        Bundesländer
+      </strong>
+
+      <button
+        id="changeLevelButton"
+      >
+        Change Level
+      </button>
+
+    </div>
+
+
+
+    <!-- HUD -->
+
+    <section class="hud">
+
+
+      <div class="stat">
+
+        <span>
+          Find
+        </span>
+
+        <strong
+          id="target"
+        >
+          Loading...
+        </strong>
+
+      </div>
+
+
+      <div class="stat">
+
+        <span>
+          Score
+        </span>
+
+        <strong
+          id="score"
+        >
+          0 / 0
+        </strong>
+
+      </div>
+
+
+      <div class="stat">
+
+        <span>
+          Time
+        </span>
+
+        <strong
+          id="time"
+        >
+          02:00
+        </strong>
+
+      </div>
+
+
+    </section>
+
+
+
+    <!-- GAME -->
+
+    <section class="game">
+
+
+      <div class="map-card">
+
+        <svg
+          id="map"
+          viewBox="0 0 800 800"
+          preserveAspectRatio="xMidYMid meet"
+        ></svg>
+
+        <p class="hint">
+          Click the region you are looking for.
+        </p>
+
+      </div>
+
+
+
+      <aside>
+
+        <h2
+          id="levelTitle"
+        >
+          Bundesländer
+        </h2>
+
+
+        <p>
+          Find every region on the map.
+        </p>
+
+
+        <div
+          id="message"
+          class="message"
+        >
+          Loading map...
+        </div>
+
+
+        <button
+          id="next"
+          class="next"
+          disabled
+        >
+          Next
+        </button>
+
+
+        <button
+          id="newGame"
+          class="secondaryButton"
+        >
+          New Game
+        </button>
+
+      </aside>
+
+
+    </section>
+
+
+  </main>
+
+</section>
+
 
 
 <!-- D3 -->
 
-<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script
+  src="https://cdn.jsdelivr.net/npm/d3@7"
+></script>
+
 
 <!-- GAME -->
 
-<script src="game.js"></script>
+<script
+  src="game.js"
+></script>
+
 
 </body>
 </html>
