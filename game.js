@@ -1,4 +1,5 @@
 const levels = {
+
   states: {
     name: "Bundesländer",
     file: "./maps/germany-states.geojson"
@@ -7,29 +8,59 @@ const levels = {
   districts: {
     name: "Regierungsbezirke",
     file: "./maps/germany-regierungsbezirke.geojson"
+  },
+
+  counties: {
+    name: "Landkreise & kreisfreie Städte",
+    file: "./maps/germany-kreise.geojson"
   }
+
 };
 
+
 let currentLevel = "states";
+
 let mapData = null;
+
 let questions = [];
+
 let currentQuestion = null;
+
 let score = 0;
+
 let time = 120;
+
 let locked = false;
+
 let timer = null;
 
-const svg = d3.select("#map");
 
-const target = document.getElementById("target");
-const scoreElement = document.getElementById("score");
-const timeElement = document.getElementById("time");
-const message = document.getElementById("message");
-const nextButton = document.getElementById("next");
-const newGameButton = document.getElementById("newGame");
-const levelTitle = document.getElementById("levelTitle");
+const svg =
+  d3.select("#map");
 
-const levelButtons = document.querySelectorAll(".level");
+const target =
+  document.getElementById("target");
+
+const scoreElement =
+  document.getElementById("score");
+
+const timeElement =
+  document.getElementById("time");
+
+const message =
+  document.getElementById("message");
+
+const nextButton =
+  document.getElementById("next");
+
+const newGameButton =
+  document.getElementById("newGame");
+
+const levelTitle =
+  document.getElementById("levelTitle");
+
+const levelButtons =
+  document.querySelectorAll(".level");
 
 
 /* =====================================
@@ -38,32 +69,51 @@ const levelButtons = document.querySelectorAll(".level");
 
 function getName(feature) {
 
-  const properties = feature.properties || {};
+  const properties =
+    feature.properties || {};
 
-  /*
-    Try common geographic name fields first.
-  */
 
   const preferredFields = [
+
     "name",
+
     "NAME",
+
     "Name",
+
     "GEN",
+
     "GEN_L",
+
     "NAM",
+
     "BEZ",
+
     "BEZIRK",
+
     "REGIERUNGSBEZIRK",
+
     "regierungsbezirk",
+
     "NL_NAME",
+
     "NAME_1",
+
     "NAME_2",
+
     "VARNAME"
+
   ];
 
-  for (const field of preferredFields) {
 
-    const value = properties[field];
+  for (
+    const field
+    of preferredFields
+  ) {
+
+    const value =
+      properties[field];
+
 
     if (
       typeof value === "string" &&
@@ -73,16 +123,19 @@ function getName(feature) {
       return value.trim();
 
     }
+
   }
 
 
   /*
-    If none of those worked, look through
-    EVERY property and find a reasonable
-    text value.
+    Fallback:
+    Find any useful text property.
   */
 
-  for (const [key, value] of Object.entries(properties)) {
+  for (
+    const [key, value]
+    of Object.entries(properties)
+  ) {
 
     if (
       typeof value === "string" &&
@@ -94,6 +147,7 @@ function getName(feature) {
       return value.trim();
 
     }
+
   }
 
 
@@ -105,23 +159,42 @@ function getName(feature) {
    GET ID
 ===================================== */
 
-function getId(feature, index) {
+function getId(
+  feature,
+  index
+) {
 
-  const properties = feature.properties || {};
+  const properties =
+    feature.properties || {};
+
 
   const possibleIds = [
+
     feature.id,
+
     properties.id,
+
     properties.ID,
+
     properties.OBJECTID,
+
     properties.ARS,
+
     properties.AGS,
+
     properties.SN_L,
+
     properties.SN_K,
+
     properties.SN_R
+
   ];
 
-  for (const id of possibleIds) {
+
+  for (
+    const id
+    of possibleIds
+  ) {
 
     if (
       id !== undefined &&
@@ -132,7 +205,9 @@ function getId(feature, index) {
       return String(id);
 
     }
+
   }
+
 
   return String(index);
 }
@@ -146,16 +221,21 @@ async function loadMap() {
 
   clearInterval(timer);
 
-  target.textContent = "Loading...";
 
-  message.textContent = "Loading map...";
+  target.textContent =
+    "Loading...";
+
+
+  message.textContent =
+    "Loading map...";
 
 
   try {
 
-    const response = await fetch(
-      levels[currentLevel].file
-    );
+    const response =
+      await fetch(
+        levels[currentLevel].file
+      );
 
 
     if (!response.ok) {
@@ -167,7 +247,8 @@ async function loadMap() {
     }
 
 
-    mapData = await response.json();
+    mapData =
+      await response.json();
 
 
     if (
@@ -182,20 +263,23 @@ async function loadMap() {
     }
 
 
-    /*
-      Print the first feature to the console.
-      This lets us inspect the actual data.
-    */
-
     console.log(
       "CURRENT LEVEL:",
       currentLevel
     );
 
+
     console.log(
-      "FIRST GEOJSON FEATURE:",
+      "FEATURES:",
+      mapData.features.length
+    );
+
+
+    console.log(
+      "FIRST FEATURE:",
       mapData.features[0]
     );
+
 
     console.log(
       "PROPERTIES:",
@@ -209,16 +293,21 @@ async function loadMap() {
 
   }
 
+
   catch (error) {
 
     console.error(error);
 
-    target.textContent = "Map error";
+
+    target.textContent =
+      "Map error";
+
 
     message.textContent =
       "The map could not be loaded.";
 
   }
+
 }
 
 
@@ -228,7 +317,9 @@ async function loadMap() {
 
 function drawMap() {
 
-  svg.selectAll("*").remove();
+  svg
+    .selectAll("*")
+    .remove();
 
 
   const projection =
@@ -262,7 +353,10 @@ function drawMap() {
     .attr(
       "data-id",
       (feature, index) =>
-        getId(feature, index)
+        getId(
+          feature,
+          index
+        )
     )
 
     .attr(
@@ -276,7 +370,10 @@ function drawMap() {
       function(event, feature) {
 
         const index =
-          mapData.features.indexOf(feature);
+          mapData.features.indexOf(
+            feature
+          );
+
 
         chooseRegion(
           getId(
@@ -287,6 +384,7 @@ function drawMap() {
 
       }
     );
+
 }
 
 
@@ -311,6 +409,7 @@ function startGame() {
 
   clearInterval(timer);
 
+
   score = 0;
 
   time = 120;
@@ -320,6 +419,7 @@ function startGame() {
 
   questions =
     shuffle(
+
       mapData.features.map(
         (feature, index) => ({
 
@@ -334,14 +434,24 @@ function startGame() {
 
         })
       )
+
     );
 
 
   svg
     .selectAll(".state")
-    .classed("correct", false)
-    .classed("wrong", false)
-    .classed("answer", false);
+    .classed(
+      "correct",
+      false
+    )
+    .classed(
+      "wrong",
+      false
+    )
+    .classed(
+      "answer",
+      false
+    );
 
 
   scoreElement.textContent =
@@ -352,7 +462,8 @@ function startGame() {
     levels[currentLevel].name;
 
 
-  nextButton.disabled = true;
+  nextButton.disabled =
+    true;
 
 
   updateTimer();
@@ -360,20 +471,25 @@ function startGame() {
   nextQuestion();
 
 
-  timer = setInterval(() => {
+  timer =
+    setInterval(
+      () => {
 
-    time--;
+        time--;
 
-    updateTimer();
+        updateTimer();
 
 
-    if (time <= 0) {
+        if (time <= 0) {
 
-      endGame();
+          endGame();
 
-    }
+        }
 
-  }, 1000);
+      },
+      1000
+    );
+
 }
 
 
@@ -398,7 +514,9 @@ function nextQuestion() {
 
   locked = false;
 
-  nextButton.disabled = true;
+
+  nextButton.disabled =
+    true;
 
 
   target.textContent =
@@ -407,6 +525,7 @@ function nextQuestion() {
 
   message.textContent =
     "Find it on the map.";
+
 }
 
 
@@ -441,15 +560,18 @@ function chooseRegion(id) {
 
     score++;
 
+
     clicked.classed(
       "correct",
       true
     );
 
+
     message.textContent =
       "Correct! 🎉";
 
   }
+
 
   else {
 
@@ -483,7 +605,9 @@ function chooseRegion(id) {
     `${score} / ${mapData.features.length}`;
 
 
-  nextButton.disabled = false;
+  nextButton.disabled =
+    false;
+
 }
 
 
@@ -507,11 +631,12 @@ function updateTimer() {
 
   timeElement.textContent =
     `${minutes}:${seconds}`;
+
 }
 
 
 /* =====================================
-   GAME END
+   END GAME
 ===================================== */
 
 function endGame() {
@@ -520,13 +645,19 @@ function endGame() {
 
   locked = true;
 
-  nextButton.disabled = true;
+  nextButton.disabled =
+    true;
 
 
   message.textContent =
     `Time's up! You found ${score} of ${mapData.features.length}.`;
+
 }
 
+
+/* =====================================
+   FINISH GAME
+===================================== */
 
 function finishGame() {
 
@@ -534,16 +665,18 @@ function finishGame() {
 
   locked = true;
 
-  nextButton.disabled = true;
+  nextButton.disabled =
+    true;
 
 
   message.textContent =
     `Finished! You found ${score} of ${mapData.features.length}! 🎉`;
+
 }
 
 
 /* =====================================
-   BUTTONS
+   NEXT BUTTON
 ===================================== */
 
 nextButton.addEventListener(
@@ -551,6 +684,10 @@ nextButton.addEventListener(
   nextQuestion
 );
 
+
+/* =====================================
+   NEW GAME
+===================================== */
 
 newGameButton.addEventListener(
   "click",
@@ -562,31 +699,37 @@ newGameButton.addEventListener(
    LEVEL SWITCHING
 ===================================== */
 
-levelButtons.forEach(button => {
+levelButtons.forEach(
+  button => {
 
-  button.addEventListener(
-    "click",
-    () => {
+    button.addEventListener(
+      "click",
+      () => {
 
-      currentLevel =
-        button.dataset.level;
-
-
-      levelButtons.forEach(
-        b =>
-          b.classList.remove("active")
-      );
+        currentLevel =
+          button.dataset.level;
 
 
-      button.classList.add("active");
+        levelButtons.forEach(
+          b =>
+            b.classList.remove(
+              "active"
+            )
+        );
 
 
-      loadMap();
+        button.classList.add(
+          "active"
+        );
 
-    }
-  );
 
-});
+        loadMap();
+
+      }
+    );
+
+  }
+);
 
 
 /* =====================================
