@@ -1,9 +1,17 @@
+/* =====================================
+   RESET
+===================================== */
+
 * {
   box-sizing: border-box;
 }
 
+
+html,
 body {
   margin: 0;
+
+  min-height: 100%;
 
   font-family:
     system-ui,
@@ -17,7 +25,310 @@ body {
   color: #17191d;
 }
 
-main {
+
+button {
+  font-family: inherit;
+}
+
+
+/* =====================================
+   SCREENS
+===================================== */
+
+.screen {
+  display: none;
+
+  min-height: 100vh;
+}
+
+
+.screen.active {
+  display: block;
+}
+
+
+/* =====================================
+   MAIN MENU
+===================================== */
+
+#mainMenu,
+#levelMenu {
+  display: none;
+
+  min-height: 100vh;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 24px;
+}
+
+
+#mainMenu.active,
+#levelMenu.active {
+  display: flex;
+}
+
+
+.menu {
+  width: min(560px, 100%);
+
+  text-align: center;
+}
+
+
+.eyebrow {
+  margin: 0 0 8px;
+
+  font-size: 12px;
+
+  font-weight: 900;
+
+  letter-spacing: .14em;
+
+  color: #70757d;
+}
+
+
+.menu h1 {
+  margin: 0;
+
+  font-size:
+    clamp(46px, 10vw, 82px);
+
+  line-height: .95;
+
+  letter-spacing: -.05em;
+}
+
+
+.menu h1 span {
+  display: block;
+
+  color: #2f6fed;
+}
+
+
+.subtitle {
+  margin: 20px 0 32px;
+
+  color: #666;
+
+  font-size: 18px;
+}
+
+
+/* =====================================
+   MENU BUTTONS
+===================================== */
+
+.bigButton,
+.menuButton,
+.backButton {
+  border: 0;
+
+  border-radius: 14px;
+
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition:
+    transform .12s ease,
+    opacity .12s ease;
+}
+
+
+.bigButton:hover,
+.menuButton:hover,
+.backButton:hover {
+  transform: translateY(-2px);
+
+  opacity: .9;
+}
+
+
+.bigButton {
+  display: block;
+
+  width: 100%;
+
+  padding: 17px;
+
+  margin-bottom: 12px;
+
+  background: #2f6fed;
+
+  color: white;
+
+  font-size: 18px;
+}
+
+
+.menuButton {
+  display: block;
+
+  width: 100%;
+
+  padding: 15px;
+
+  background: white;
+
+  color: #17191d;
+
+  border: 1px solid #ddd;
+
+  font-size: 16px;
+}
+
+
+.backButton {
+  display: block;
+
+  margin-bottom: 30px;
+
+  padding: 10px 14px;
+
+  background: transparent;
+
+  color: #555;
+}
+
+
+/* =====================================
+   COUNTRY
+===================================== */
+
+.country {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  margin-top: 28px;
+
+  padding: 15px 18px;
+
+  border-radius: 14px;
+
+  background: white;
+
+  border: 1px solid #ddd;
+
+  text-align: left;
+}
+
+
+.country span {
+  color: #777;
+
+  font-size: 13px;
+}
+
+
+.country strong {
+  font-size: 15px;
+}
+
+
+/* =====================================
+   LEVEL MENU
+===================================== */
+
+#levelMenu .menu {
+  text-align: left;
+}
+
+
+#levelMenu h2 {
+  margin: 0 0 24px;
+
+  font-size: 38px;
+
+  letter-spacing: -.03em;
+}
+
+
+.levelCards {
+  display: grid;
+
+  gap: 10px;
+
+  margin-bottom: 20px;
+}
+
+
+.levelCard {
+  width: 100%;
+
+  padding: 18px;
+
+  border-radius: 16px;
+
+  border: 2px solid #ddd;
+
+  background: white;
+
+  color: #17191d;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    border .12s ease,
+    transform .12s ease;
+}
+
+
+.levelCard:hover {
+  transform: translateY(-1px);
+}
+
+
+.levelCard.selected {
+  border-color: #2f6fed;
+
+  background: #f4f7ff;
+}
+
+
+.levelCard strong {
+  display: block;
+
+  font-size: 14px;
+
+  color: #2f6fed;
+}
+
+
+.levelCard span {
+  display: block;
+
+  margin-top: 3px;
+
+  font-size: 19px;
+
+  font-weight: 800;
+}
+
+
+.levelCard small {
+  display: block;
+
+  margin-top: 4px;
+
+  color: #777;
+}
+
+
+/* =====================================
+   GAME
+===================================== */
+
+#gameScreen main {
   width: min(1100px, 100%);
 
   margin: auto;
@@ -26,9 +337,7 @@ main {
 }
 
 
-/* HEADER */
-
-header {
+#gameScreen header {
   display: flex;
 
   justify-content: space-between;
@@ -38,19 +347,8 @@ header {
   gap: 20px;
 }
 
-.eyebrow {
-  margin: 0 0 5px;
 
-  font-size: 12px;
-
-  font-weight: 800;
-
-  letter-spacing: .12em;
-
-  color: #666;
-}
-
-h1 {
+#gameScreen h1 {
   margin: 0;
 
   font-size:
@@ -60,93 +358,69 @@ h1 {
 }
 
 
-/* BUTTONS */
-
-button {
+#gameScreen header button {
   border: 0;
 
   border-radius: 12px;
 
   padding: 12px 18px;
 
-  font-family: inherit;
-
-  font-size: 15px;
-
-  font-weight: 800;
-
-  cursor: pointer;
-
   background: #17191d;
 
   color: white;
 
-  transition:
-    transform .12s ease,
-    opacity .12s ease;
-}
+  font-weight: 800;
 
-button:hover {
-  opacity: .9;
-
-  transform: translateY(-1px);
-}
-
-button:active {
-  transform: translateY(0);
+  cursor: pointer;
 }
 
 
-/* LEVEL SELECTOR */
+/* =====================================
+   GAME LEVEL BAR
+===================================== */
 
-.levels {
+.gameLevel {
   display: flex;
 
-  gap: 10px;
+  justify-content: space-between;
 
-  margin: 24px 0;
-}
+  align-items: center;
 
-.level {
-  flex: 1;
+  gap: 12px;
 
-  min-width: 0;
+  margin: 24px 0 12px;
+
+  padding: 12px 16px;
 
   background: white;
 
-  color: #17191d;
-
   border: 1px solid #ddd;
 
-  text-align: left;
-}
-
-.level small {
-  display: block;
-
-  margin-top: 3px;
-
-  font-size: 12px;
-
-  font-weight: 500;
-
-  opacity: .65;
-}
-
-.level.active {
-  background: #2f6fed;
-
-  color: white;
-
-  border-color: #2f6fed;
-}
-
-.level.active small {
-  opacity: .85;
+  border-radius: 14px;
 }
 
 
-/* HUD */
+.gameLevel strong {
+  font-size: 16px;
+}
+
+
+.gameLevel button {
+  border: 0;
+
+  background: transparent;
+
+  color: #2f6fed;
+
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+
+/* =====================================
+   HUD
+===================================== */
 
 .hud {
   display: grid;
@@ -156,8 +430,9 @@ button:active {
 
   gap: 12px;
 
-  margin: 24px 0;
+  margin: 12px 0 24px;
 }
+
 
 .stat {
   background: white;
@@ -169,6 +444,7 @@ button:active {
   padding: 14px 18px;
 }
 
+
 .stat span {
   display: block;
 
@@ -176,6 +452,7 @@ button:active {
 
   font-size: 12px;
 }
+
 
 .stat strong {
   display: block;
@@ -186,7 +463,9 @@ button:active {
 }
 
 
-/* GAME */
+/* =====================================
+   GAME LAYOUT
+===================================== */
 
 .game {
   display: grid;
@@ -199,7 +478,9 @@ button:active {
 }
 
 
-/* MAP */
+/* =====================================
+   MAP
+===================================== */
 
 .map-card {
   background: white;
@@ -212,6 +493,7 @@ button:active {
 
   overflow: hidden;
 }
+
 
 .map-card svg {
   display: block;
@@ -226,7 +508,9 @@ button:active {
 }
 
 
-/* GEOJSON */
+/* =====================================
+   GEOJSON REGIONS
+===================================== */
 
 .state {
   fill: #d9dde2;
@@ -237,29 +521,33 @@ button:active {
 
   cursor: pointer;
 
-  transition:
-    fill .15s ease,
-    opacity .15s ease;
+  transition: fill .15s ease;
 }
+
 
 .state:hover {
   fill: #aeb5bd;
 }
 
+
 .state.correct {
   fill: #49a66b;
 }
 
+
 .state.wrong {
   fill: #e06b67;
 }
+
 
 .state.answer {
   fill: #78bf91;
 }
 
 
-/* HINT */
+/* =====================================
+   HINT
+===================================== */
 
 .hint {
   margin: 8px 4px 2px;
@@ -270,7 +558,9 @@ button:active {
 }
 
 
-/* SIDEBAR */
+/* =====================================
+   SIDEBAR
+===================================== */
 
 aside {
   background: white;
@@ -284,11 +574,11 @@ aside {
   height: max-content;
 }
 
+
 aside h2 {
   margin-top: 0;
-
-  margin-bottom: 8px;
 }
+
 
 aside p {
   color: #555;
@@ -296,8 +586,6 @@ aside p {
   line-height: 1.5;
 }
 
-
-/* MESSAGE */
 
 .message {
   display: flex;
@@ -313,95 +601,125 @@ aside p {
   border-radius: 12px;
 
   background: #f0f1f3;
-
-  line-height: 1.4;
 }
 
 
-/* NEXT */
+/* =====================================
+   GAME BUTTONS
+===================================== */
 
-.next {
+.next,
+.secondaryButton {
   width: 100%;
 
-  background: #2f6fed;
+  border: 0;
+
+  border-radius: 12px;
+
+  padding: 13px;
+
+  font-weight: 800;
+
+  cursor: pointer;
 }
+
+
+.next {
+  background: #2f6fed;
+
+  color: white;
+}
+
 
 .next:disabled {
   opacity: .4;
 
   cursor: not-allowed;
-
-  transform: none;
 }
 
 
-/* TABLET / MOBILE */
+.secondaryButton {
+  margin-top: 10px;
+
+  background: #f0f1f3;
+
+  color: #17191d;
+}
+
+
+/* =====================================
+   MOBILE
+===================================== */
 
 @media (max-width: 750px) {
 
-  main {
+  #gameScreen main {
     padding: 20px 14px;
   }
 
-  header {
+
+  #gameScreen header {
     align-items: flex-start;
   }
+
 
   .game {
     grid-template-columns: 1fr;
   }
 
+
   aside {
     order: -1;
   }
+
 
   .map-card svg {
     min-height: 400px;
   }
 
+
   .hud strong {
     font-size: 18px;
   }
+
 }
 
-
-/* MOBILE LEVELS */
 
 @media (max-width: 600px) {
-
-  .levels {
-    flex-direction: column;
-
-    gap: 8px;
-  }
-
-  .level {
-    width: 100%;
-  }
-}
-
-
-/* SMALL PHONES */
-
-@media (max-width: 450px) {
-
-  header {
-    flex-direction: column;
-  }
-
-  header button {
-    width: 100%;
-  }
 
   .hud {
     grid-template-columns: 1fr;
   }
 
-  .map-card {
-    padding: 8px;
+
+  .gameLevel {
+    align-items: flex-start;
+
+    flex-direction: column;
   }
 
+
   .map-card svg {
-    min-height: 330px;
+    min-height: 360px;
   }
+
+}
+
+
+@media (max-width: 450px) {
+
+  #gameScreen header {
+    flex-direction: column;
+  }
+
+
+  #gameScreen header button {
+    width: 100%;
+  }
+
+
+  .menu h1 {
+    font-size: 48px;
+  }
+
 }
