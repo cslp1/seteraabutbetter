@@ -29,89 +29,96 @@ const nextButton = document.getElementById("next");
 const newGameButton = document.getElementById("newGame");
 const levelTitle = document.getElementById("levelTitle");
 
-const levelButtons =
-  document.querySelectorAll(".level");
+const levelButtons = document.querySelectorAll(".level");
 
 
-/* ================================
+/* =====================================
    GET REGION NAME
-================================ */
+===================================== */
 
 function getName(feature) {
 
-  const p = feature.properties || {};
+  const properties = feature.properties || {};
 
   /*
-    The Germany GeoJSON files can use
-    different property names depending
-    on the administrative level.
+    Try common geographic name fields first.
   */
 
-  const possibleNames = [
-    p.name,
-    p.NAME,
-    p.Name,
-    p.NAM,
-    p.GEN,
-    p.GEN_L,
-    p.NL_NAME,
-    p.BEZ,
-    p.BEZIRK,
-    p.regierungsbezirk,
-    p.REGIERUNGSBEZIRK,
-    p.ARS_NAME,
-    p.ars_name,
-    p.AGS_NAME,
-    p.LAN,
-    p.LAND
+  const preferredFields = [
+    "name",
+    "NAME",
+    "Name",
+    "GEN",
+    "GEN_L",
+    "NAM",
+    "BEZ",
+    "BEZIRK",
+    "REGIERUNGSBEZIRK",
+    "regierungsbezirk",
+    "NL_NAME",
+    "NAME_1",
+    "NAME_2",
+    "VARNAME"
   ];
 
-  for (const name of possibleNames) {
+  for (const field of preferredFields) {
+
+    const value = properties[field];
 
     if (
-      name !== undefined &&
-      name !== null &&
-      String(name).trim() !== ""
+      typeof value === "string" &&
+      value.trim() !== ""
     ) {
 
-      return String(name).trim();
+      return value.trim();
 
     }
   }
 
 
   /*
-    Last resort:
-    create a readable name from the
-    feature's properties.
+    If none of those worked, look through
+    EVERY property and find a reasonable
+    text value.
   */
 
-  console.warn(
-    "Could not find region name.",
-    p
-  );
+  for (const [key, value] of Object.entries(properties)) {
+
+    if (
+      typeof value === "string" &&
+      value.trim() !== "" &&
+      value.length < 100 &&
+      !/^\d+$/.test(value.trim())
+    ) {
+
+      return value.trim();
+
+    }
+  }
+
 
   return "Unknown region";
 }
 
 
-/* ================================
-   GET UNIQUE ID
-================================ */
+/* =====================================
+   GET ID
+===================================== */
 
 function getId(feature, index) {
 
-  const p = feature.properties || {};
+  const properties = feature.properties || {};
 
   const possibleIds = [
     feature.id,
-    p.id,
-    p.ID,
-    p.OBJECTID,
-    p.ARS,
-    p.AGS,
-    p.SN_L,
-    p.SN_K
+    properties.id,
+    properties.ID,
+    properties.OBJECTID,
+    properties.ARS,
+    properties.AGS,
+    properties.SN_L,
+    properties.SN_K,
+    properties.SN_R
   ];
 
   for (const id of possibleIds) {
@@ -131,27 +138,24 @@ function getId(feature, index) {
 }
 
 
-/* ================================
+/* =====================================
    LOAD MAP
-================================ */
+===================================== */
 
 async function loadMap() {
 
   clearInterval(timer);
 
-  message.textContent =
-    "Loading map...";
+  target.textContent = "Loading...";
 
-  target.textContent =
-    "Loading...";
+  message.textContent = "Loading map...";
 
 
   try {
 
-    const response =
-      await fetch(
-        levels[currentLevel].file
-      );
+    const response = await fetch(
+      levels[currentLevel].file
+    );
 
 
     if (!response.ok) {
@@ -163,36 +167,38 @@ async function loadMap() {
     }
 
 
-    mapData =
-      await response.json();
+    mapData = await response.json();
 
 
     if (
       !mapData.features ||
-      !mapData.features.length
+      mapData.features.length === 0
     ) {
 
       throw new Error(
-        "GeoJSON contains no features."
+        "The GeoJSON contains no features."
       );
 
     }
 
 
-    console.log(
-      "Loaded map:",
-      mapData
-    );
-
-
     /*
-      Useful debugging information.
-      Open the browser console with F12
-      if something still doesn't work.
+      Print the first feature to the console.
+      This lets us inspect the actual data.
     */
 
     console.log(
-      "First feature properties:",
+      "CURRENT LEVEL:",
+      currentLevel
+    );
+
+    console.log(
+      "FIRST GEOJSON FEATURE:",
+      mapData.features[0]
+    );
+
+    console.log(
+      "PROPERTIES:",
       mapData.features[0].properties
     );
 
@@ -201,22 +207,24 @@ async function loadMap() {
 
     startGame();
 
-  } catch (error) {
+  }
+
+  catch (error) {
 
     console.error(error);
 
-    message.textContent =
-      "Map could not be loaded. Check the browser console.";
+    target.textContent = "Map error";
 
-    target.textContent =
-      "Map error";
+    message.textContent =
+      "The map could not be loaded.";
+
   }
 }
 
 
-/* ================================
+/* =====================================
    DRAW MAP
-================================ */
+===================================== */
 
 function drawMap() {
 
@@ -268,9 +276,7 @@ function drawMap() {
       function(event, feature) {
 
         const index =
-          mapData.features.indexOf(
-            feature
-          );
+          mapData.features.indexOf(feature);
 
         chooseRegion(
           getId(
@@ -284,9 +290,9 @@ function drawMap() {
 }
 
 
-/* ================================
+/* =====================================
    SHUFFLE
-================================ */
+===================================== */
 
 function shuffle(array) {
 
@@ -297,9 +303,9 @@ function shuffle(array) {
 }
 
 
-/* ================================
+/* =====================================
    START GAME
-================================ */
+===================================== */
 
 function startGame() {
 
@@ -371,9 +377,9 @@ function startGame() {
 }
 
 
-/* ================================
+/* =====================================
    NEXT QUESTION
-================================ */
+===================================== */
 
 function nextQuestion() {
 
@@ -382,6 +388,7 @@ function nextQuestion() {
     finishGame();
 
     return;
+
   }
 
 
@@ -403,9 +410,9 @@ function nextQuestion() {
 }
 
 
-/* ================================
+/* =====================================
    CHOOSE REGION
-================================ */
+===================================== */
 
 function chooseRegion(id) {
 
@@ -415,6 +422,7 @@ function chooseRegion(id) {
   ) {
 
     return;
+
   }
 
 
@@ -433,17 +441,17 @@ function chooseRegion(id) {
 
     score++;
 
-
     clicked.classed(
       "correct",
       true
     );
 
-
     message.textContent =
       "Correct! 🎉";
 
-  } else {
+  }
+
+  else {
 
     clicked.classed(
       "wrong",
@@ -467,6 +475,7 @@ function chooseRegion(id) {
 
     message.textContent =
       `Wrong! The answer was ${currentQuestion.name}.`;
+
   }
 
 
@@ -478,9 +487,9 @@ function chooseRegion(id) {
 }
 
 
-/* ================================
+/* =====================================
    TIMER
-================================ */
+===================================== */
 
 function updateTimer() {
 
@@ -501,9 +510,9 @@ function updateTimer() {
 }
 
 
-/* ================================
-   END GAME
-================================ */
+/* =====================================
+   GAME END
+===================================== */
 
 function endGame() {
 
@@ -519,10 +528,6 @@ function endGame() {
 }
 
 
-/* ================================
-   FINISH GAME
-================================ */
-
 function finishGame() {
 
   clearInterval(timer);
@@ -537,9 +542,9 @@ function finishGame() {
 }
 
 
-/* ================================
-   NEXT BUTTON
-================================ */
+/* =====================================
+   BUTTONS
+===================================== */
 
 nextButton.addEventListener(
   "click",
@@ -547,19 +552,15 @@ nextButton.addEventListener(
 );
 
 
-/* ================================
-   NEW GAME
-================================ */
-
 newGameButton.addEventListener(
   "click",
   startGame
 );
 
 
-/* ================================
-   LEVEL BUTTONS
-================================ */
+/* =====================================
+   LEVEL SWITCHING
+===================================== */
 
 levelButtons.forEach(button => {
 
@@ -573,15 +574,11 @@ levelButtons.forEach(button => {
 
       levelButtons.forEach(
         b =>
-          b.classList.remove(
-            "active"
-          )
+          b.classList.remove("active")
       );
 
 
-      button.classList.add(
-        "active"
-      );
+      button.classList.add("active");
 
 
       loadMap();
@@ -592,8 +589,8 @@ levelButtons.forEach(button => {
 });
 
 
-/* ================================
+/* =====================================
    START
-================================ */
+===================================== */
 
 loadMap();
