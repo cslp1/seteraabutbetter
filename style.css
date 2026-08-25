@@ -1,15 +1,6 @@
-/* ========================================
-   RESET
-======================================== */
-
 * {
   box-sizing: border-box;
 }
-
-
-/* ========================================
-   PAGE
-======================================== */
 
 body {
   margin: 0;
@@ -26,7 +17,6 @@ body {
   color: #17191d;
 }
 
-
 main {
   width: min(1100px, 100%);
 
@@ -36,9 +26,7 @@ main {
 }
 
 
-/* ========================================
-   HEADER
-======================================== */
+/* HEADER */
 
 header {
   display: flex;
@@ -49,7 +37,6 @@ header {
 
   gap: 20px;
 }
-
 
 .eyebrow {
   margin: 0 0 5px;
@@ -63,7 +50,6 @@ header {
   color: #666;
 }
 
-
 h1 {
   margin: 0;
 
@@ -74,9 +60,7 @@ h1 {
 }
 
 
-/* ========================================
-   BUTTONS
-======================================== */
+/* BUTTONS */
 
 button {
   border: 0;
@@ -99,10 +83,8 @@ button {
 
   transition:
     transform .12s ease,
-    opacity .12s ease,
-    background .12s ease;
+    opacity .12s ease;
 }
-
 
 button:hover {
   opacity: .9;
@@ -110,15 +92,12 @@ button:hover {
   transform: translateY(-1px);
 }
 
-
 button:active {
   transform: translateY(0);
 }
 
 
-/* ========================================
-   LEVEL SELECTOR
-======================================== */
+/* LEVEL SELECTOR */
 
 .levels {
   display: flex;
@@ -128,9 +107,10 @@ button:active {
   margin: 24px 0;
 }
 
-
 .level {
   flex: 1;
+
+  min-width: 0;
 
   background: white;
 
@@ -140,7 +120,6 @@ button:active {
 
   text-align: left;
 }
-
 
 .level small {
   display: block;
@@ -154,7 +133,6 @@ button:active {
   opacity: .65;
 }
 
-
 .level.active {
   background: #2f6fed;
 
@@ -163,15 +141,12 @@ button:active {
   border-color: #2f6fed;
 }
 
-
 .level.active small {
   opacity: .85;
 }
 
 
-/* ========================================
-   HUD
-======================================== */
+/* HUD */
 
 .hud {
   display: grid;
@@ -184,7 +159,6 @@ button:active {
   margin: 24px 0;
 }
 
-
 .stat {
   background: white;
 
@@ -195,7 +169,6 @@ button:active {
   padding: 14px 18px;
 }
 
-
 .stat span {
   display: block;
 
@@ -203,7 +176,6 @@ button:active {
 
   font-size: 12px;
 }
-
 
 .stat strong {
   display: block;
@@ -214,9 +186,7 @@ button:active {
 }
 
 
-/* ========================================
-   GAME LAYOUT
-======================================== */
+/* GAME */
 
 .game {
   display: grid;
@@ -229,9 +199,7 @@ button:active {
 }
 
 
-/* ========================================
-   MAP CARD
-======================================== */
+/* MAP */
 
 .map-card {
   background: white;
@@ -244,7 +212,6 @@ button:active {
 
   overflow: hidden;
 }
-
 
 .map-card svg {
   display: block;
@@ -259,9 +226,7 @@ button:active {
 }
 
 
-/* ========================================
-   GEOJSON MAP
-======================================== */
+/* GEOJSON */
 
 .state {
   fill: #d9dde2;
@@ -277,30 +242,24 @@ button:active {
     opacity .15s ease;
 }
 
-
 .state:hover {
   fill: #aeb5bd;
 }
-
 
 .state.correct {
   fill: #49a66b;
 }
 
-
 .state.wrong {
   fill: #e06b67;
 }
-
 
 .state.answer {
   fill: #78bf91;
 }
 
 
-/* ========================================
-   MAP HINT
-======================================== */
+/* HINT */
 
 .hint {
   margin: 8px 4px 2px;
@@ -311,9 +270,7 @@ button:active {
 }
 
 
-/* ========================================
-   SIDEBAR
-======================================== */
+/* SIDEBAR */
 
 aside {
   background: white;
@@ -327,13 +284,11 @@ aside {
   height: max-content;
 }
 
-
 aside h2 {
   margin-top: 0;
 
   margin-bottom: 8px;
 }
-
 
 aside p {
   color: #555;
@@ -342,9 +297,7 @@ aside p {
 }
 
 
-/* ========================================
-   MESSAGE
-======================================== */
+/* MESSAGE */
 
 .message {
   display: flex;
@@ -365,16 +318,13 @@ aside p {
 }
 
 
-/* ========================================
-   NEXT BUTTON
-======================================== */
+/* NEXT */
 
 .next {
   width: 100%;
 
   background: #2f6fed;
 }
-
 
 .next:disabled {
   opacity: .4;
@@ -385,9 +335,7 @@ aside p {
 }
 
 
-/* ========================================
-   MOBILE — GAME
-======================================== */
+/* TABLET / MOBILE */
 
 @media (max-width: 750px) {
 
@@ -395,37 +343,29 @@ aside p {
     padding: 20px 14px;
   }
 
-
   header {
     align-items: flex-start;
   }
-
 
   .game {
     grid-template-columns: 1fr;
   }
 
-
   aside {
     order: -1;
   }
-
 
   .map-card svg {
     min-height: 400px;
   }
 
-
   .hud strong {
     font-size: 18px;
   }
-
 }
 
 
-/* ========================================
-   MOBILE — LEVEL BUTTONS
-======================================== */
+/* MOBILE LEVELS */
 
 @media (max-width: 600px) {
 
@@ -435,17 +375,13 @@ aside p {
     gap: 8px;
   }
 
-
   .level {
     width: 100%;
   }
-
 }
 
 
-/* ========================================
-   SMALL PHONES
-======================================== */
+/* SMALL PHONES */
 
 @media (max-width: 450px) {
 
@@ -453,24 +389,19 @@ aside p {
     flex-direction: column;
   }
 
-
   header button {
     width: 100%;
   }
-
 
   .hud {
     grid-template-columns: 1fr;
   }
 
-
   .map-card {
     padding: 8px;
   }
 
-
   .map-card svg {
     min-height: 330px;
   }
-
 }
